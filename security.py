@@ -23,4 +23,4 @@ def create_token(user_id: int):
     }
     return jwt.encode(payload, SECRET_KEY)
 
-aoauth2_scheme = OAuth2PasswordBearer("/auth/login")
+oauth2_scheme = OAuth2PasswordBearer("/auth/login")

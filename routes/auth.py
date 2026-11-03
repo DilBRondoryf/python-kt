@@ -10,38 +10,40 @@ from security import hash_password, verify_password, create_token
 
 router = APIRouter(prefix="/auth")
 
+
 @router.post("/register")
 def register(data: UserRegister, session: Session = Depends(get_session)):
     existing = session.execute(
         select(User).where(User.email == data.email)
     ).scalar_one_or_none()
-    
+
     if existing:
         raise HTTPException(status_code=409, detail="Email уже занят")
-    
+
     user = User(
         email=data.email,
         hashed_password=hash_password(data.password),
     )
-    
+
     session.add(user)
     session.commit()
-    
+
     return {"id": user.id, "email": user.email}
 
+
 @router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    session: Session = Depends(get_session),
+):
     user = session.execute(
         select(User).where(User.email == form_data.username)
     ).scalar_one_or_none()
-    
+
     if user is None or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Неверный email или пароль")
-    
-    return {
-        "access_token": create_token(user.id),
-        "token_type": "bearer"
-    }
-    
+
+    return {"access_token": create_token(user.id), "token_type": "bearer"}
+
 
 # /login, /register

@@ -1,4 +1,5 @@
 import bcrypt
+from datetime import datetime, timedelta
 from jose import jwt
 from fastapi.security import OAuth2PasswordBearer
 
@@ -19,7 +20,8 @@ def verify_password(password: str, hashed_password: str):
     
 def create_token(user_id: int):
     payload = {
-        "sub": str(user_id)
+        "sub": str(user_id),
+        "exp": datetime.utcnow() + timedelta(seconds=30)
     }
     return jwt.encode(payload, SECRET_KEY)
 

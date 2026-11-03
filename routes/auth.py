@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from database import get_session
+from limiter import limiter
 from models import User
 from schemas import UserRegister
 from security import hash_password, verify_password, create_token
@@ -32,7 +33,9 @@ def register(data: UserRegister, session: Session = Depends(get_session)):
 
 
 @router.post("/login")
+@limiter.limit("5/minute")
 def login(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     session: Session = Depends(get_session),
 ):

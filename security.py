@@ -21,7 +21,7 @@ def verify_password(password: str, hashed_password: str):
 def create_token(user_id: int):
     payload = {
         "sub": str(user_id),
-        "exp": datetime.utcnow() + timedelta(seconds=30)
+        "exp": datetime.utcnow() + timedelta(minutes=30)
     }
     return jwt.encode(payload, SECRET_KEY)
 

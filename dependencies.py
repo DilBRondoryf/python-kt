@@ -3,7 +3,7 @@ from jose import jwt
 from sqlalchemy.orm import Session
 
 from database import get_session
-from models import User
+from models import User, UserRole
 from security import oauth2_scheme, SECRET_KEY
 
 
@@ -17,3 +17,16 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="Пользователь не найден")
 
     return user
+
+
+def require_role(*allowed_roles: UserRole):
+    def role_checker(current_user: User = Depends(get_current_user)):
+        if current_user.role not in allowed_roles:
+            raise HTTPException(
+                status_code=403,
+                detail="Недостаточно прав"
+            )
+            
+        return current_user
+    
+    return role_checker

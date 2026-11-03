@@ -23,6 +23,7 @@ def register(data: UserRegister, session: Session = Depends(get_session)):
     user = User(
         email=data.email,
         hashed_password=hash_password(data.password),
+        role=data.role
     )
 
     session.add(user)
@@ -47,3 +48,9 @@ def login(
 
 
 # /login, /register
+"""
+1) Убрать роль из UserRegister и из создания пользователся user = User...
+2) Создать отдельный маршрут в admin.py PATCH /admin/users/{user_id}/role. Он принимает 
+{"role": "..."} и обновляет роль указнного user_id. ЭТОТ МАРШРУТ ЗАЩИЩЁН АДМИНОМ.
+"""
+
